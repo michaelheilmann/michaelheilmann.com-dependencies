@@ -1,0 +1,28 @@
+# These are some examples of commonly ignored file patterns.
+# You should customize this list as applicable to your project.
+# Learn more about .gitignore:
+#     https://www.atlassian.com/git/tutorials/saving-changes/gitignore
+
+source-zlib
+build-zlib-*
+package-zlib-*
+zlib-x64*.zip
+zlib-x86*.zip
+
+source-libpng
+build-libpng-*
+package-libpng-*
+libpng-x64*.zip
+libpng-x86*.zip
+
+source-freetype
+build-freetype-*
+package-freetype-*
+freetype-x64*.zip
+freetype-x86*.zip
+
+source-openal-soft
+build-openal-soft-*
+package-openal-soft-*
+openal-soft-x64*.zip
+openal-soft-x86*.zip
