@@ -104,7 +104,7 @@ deploy:
     description: 'michaelheilmann.com dependencies v$(APPVEYOR_BUILD_VERSION)'
     provider: GitHub
     auth_token:
-        secure: iTg7jon0UCvoGT5y2flVxNsUjQru+5xUeiqiCRWyXnjyZtUOsd4f33Wnx+St2N2r4xn1Eg3gHtD2/7KUoZpOvfnUzH9GyOr5xGeJI8rIKx2ydlK2jbgeGRHIp1kgUtnV # encrypted token from GitHub
+        secure: iTg7jon0UCvoGT5y2flVxKbuZIM0cCf+3cKmhb811umlbh9zHOtvJQjEqDU53XDT8/SE5zreMGYwnShZDpovMZRmpiuTdlQD9Y0hjKw1a+QBZguyWOpmttY9hv8E5FFq # encrypted token from GitHub
         artifact: $(ARCHIVE_FILENAME)                                            # upload the artifact
     draft: true
     prerelease: false
