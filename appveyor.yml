@@ -37,66 +37,51 @@ install:
 # Generate solution and project files.
 before_build:
     - ps: |
-        # The name of the CMake generator, for example "Visual Studio 17 2022".
-        ${env:CMAKE_GENERATOR_NAME}="";
-        # The name of the CMake architecture, for example "Win32" or "x64".
-        ${env:CMAKE_ARCHITECTURE_NAME}="";
-        # The name of the zip file, for example "michaelheilmann.com-${env:APPVEYOR_REPO_BRANCH}-windows-x86-debug-10.1.9.zip".
-        ${env:ZIP_FILENAME}="";
-        # The name of the release, for example "michaelheilmann.com-${env:APPVEYOR_REPO_BRANCH}-10.1.9".
-        ${env:RELEASE_NAME}="";
-        
-        ${env:ZIP_FILENAME}="michaelheilmann.com-dependencies-${env:APPVEYOR_REPO_BRANCH}";
-        ${env:ZIP_FILENAME}="${env:ZIP_FILENAME}-windows"
-        
-        ${env:RELEASE_NAME}="michaelheilmann.com-dependencies-v$(${env:APPVEYOR_BUILD_VERSION}.ToLower())"
-        
-        ${env:CMAKE_ARCHITECTURE_NAME}=${env:PLATFORM}
-        ${env:CMAKE_GENERATOR_NAME}="Visual Studio 17 2022"
-        
-        if (${env:PLATFORM} -eq 'Win32') {
-          ${env:ZIP_FILENAME}="${env:ZIP_FILENAME}-x86"
+       if (${env:PLATFORM} -eq 'Win32') {
+          ${env:SUFFIX}="x86"
         } elseif(${env:PLATFORM} -eq 'x64') {
-          ${env:ZIP_FILENAME}="${env:ZIP_FILENAME}-x64"
+          ${env:SUFFIX}="x64"
         } else {
           throw "unsupported platform ${env:PLATFORM}";
         }
-        
-        ${env:ZIP_FILENAME}="${env:ZIP_FILENAME}-$(${env:CONFIGURATION}.ToLower())-v$(${env:APPVEYOR_BUILD_VERSION}.ToLower())";
-        ${env:ZIP_FILENAME}="${env:ZIP_FILENAME}.zip";
-        
-        Write-Host "Release Name:           ${env:RELEASE_NAME}";
-        Write-Host "AppVeyor Platform:      ${env:PLATFORM}";
-        Write-Host "AppVeyor Configuration: ${env:CONFIGURATION}";
-        Write-Host "Zip File Name:          ${env:ZIP_FILENAME}";
-        Write-Host "CMake Generator:        ${env:CMAKE_GENERATOR_NAME}"
-        Write-Host "CMake Architecture:     ${env:CMAKE_ARCHITECTURE_NAME}"
+        ${env:SUFFIX}="$(${env:CONFIGURATION}.ToLower())-${env:SUFFIX}"
+        Write-Host "Suffix: ${env:SUFFIX}";
+    - ps: |
+        # The name of the CMake generator, for example "Visual Studio 17 2022".
+        ${env:CMAKE_GENERATOR_NAME}="Visual Studio 17 2022"
+        # The name of the release, for example "michaelheilmann.com-${env:APPVEYOR_REPO_BRANCH}-10.1.9".
+        ${env:RELEASE_NAME}="michaelheilmann.com-dependencies-v$(${env:APPVEYOR_BUILD_VERSION}.ToLower())"
+        Write-Host "Release Name: ${env:RELEASE_NAME}"
+        Write-Host "AppVeyor Platform: ${env:PLATFORM}"
+        Write-Host "AppVeyor Configuration: ${env:CONFIGURATION}"
+        Write-Host "AppVeyor Build Folder: ${env:APPVEYOR_BUILD_FOLDER}"
+        Write-Host "CMake Generator: ${env:CMAKE_GENERATOR_NAME}"
     - ps: |
         Write-Host "CMake Generator: ${env:CMAKE_GENERATOR_NAME}"
         Write-Host "CMake Architecture: ${env:CMAKE_ARCHITECTURE_NAME}"
-        cmake -G ${env:CMAKE_GENERATOR_NAME} -A ${env:CMAKE_ARCHITECTURE_NAME} CMakeLists.txt
+        cmake -G ${env:CMAKE_GENERATOR_NAME} -A ${env:PLATFORM} CMakeLists.txt
 
 build:
     parallel: true # enable MSBuild parallel builds
     project: Arcadia-Dependencies.sln # path to Visual Studio solution or project
 
 after_build:
-    - ps: New-Item ${env:APPVEYOR_BUILD_FOLDER}\.keepme -type file
-    - ps: 7z a ${env:ZIP_FILENAME} ${env:APPVEYOR_BUILD_FOLDER}\.keepme
-    #- ps: |
-    #    7z a -tzip ${env:ARCHIVE_FILENAME} `
-    #        ${env:APPVEYOR_BUILD_FOLDER}/openal-soft-${env:SUFFIX}.zip `
-    #        ${env:APPVEYOR_BUILD_FOLDER}/freetype-${env:SUFFIX}.zip `
-    #        ${env:APPVEYOR_BUILD_FOLDER}/libpng-${env:SUFFIX}.zip `
-    #        ${env:APPVEYOR_BUILD_FOLDER}/zlib-${env:SUFFIX}.zip
 
 # If one matrix entry fails, all entries fails (https://www.appveyor.com/docs/build-configuration#failing-strategy).
 matrix:
     fast_finish: true
 
 artifacts:
-    - path: $(ZIP_FILENAME)
-      name: $(ZIP_FILENAME)
+    - path: my-opengl\pkg\my-opengl-$(SUFFIX).zip
+      name: my-opengl\my-opengl-$(SUFFIX).zip
+    - path: my-openal\pkg\my-openal-$(SUFFIX).zip
+      name: my-openal\my-openal-$(SUFFIX).zip
+    - path: my-freetype\pkg\my-freetype-$(SUFFIX).zip
+      name: my-freetype\my-freetype-$(SUFFIX).zip
+    - path: my-libpng\pkg\my-libpng-$(SUFFIX).zip
+      name: my-libpng\my-libpng-$(SUFFIX).zip
+    - path: my-zlib\pkg\my-zlib-$(SUFFIX).zip
+      name: my-zlib\my-zlib-$(SUFFIX).zip
 
 deploy:
     release: michaelheilmann.com-dependencies-v$(APPVEYOR_BUILD_VERSION)
@@ -105,9 +90,14 @@ deploy:
     provider: GitHub
     auth_token:
         secure: iTg7jon0UCvoGT5y2flVxKbuZIM0cCf+3cKmhb811umlbh9zHOtvJQjEqDU53XDT8/SE5zreMGYwnShZDpovMZRmpiuTdlQD9Y0hjKw1a+QBZguyWOpmttY9hv8E5FFq # encrypted token from GitHub
-        artifact: $(ARCHIVE_FILENAME)                                            # upload the artifact
+        artifact: >
+            my-opengl\my-opengl-$(SUFFIX).zip,
+            my-openal\my-openal-$(SUFFIX).zip,
+            my-freetype\my-freetype-$(SUFFIX).zip,
+            my-libpng\my-libpng-$(SUFFIX).zip,
+            my-zlib\pkg\my-zlib-$(SUFFIX).zip
     draft: true
     prerelease: false
     force_update: true
     on:
-        branch: master                 # release from master branch only
+        branch: main # release from master branch only

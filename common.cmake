@@ -20,6 +20,16 @@ cmake_minimum_required(VERSION 3.29)
 macro(DoBeginPackage target)
   set(configuration $<LOWER_CASE:$<CONFIG>>)
 
+  if(CMAKE_SIZEOF_VOID_P EQUAL 8)
+    set(instruction-set-architecture x64)
+  elseif (CMAKE_SIZEOF_VOID_P EQUAL 4)
+    set(instruction-set-architecture x86)
+  endif()
+  
+  # example: "debug-x64", "release-x86", usw.
+  set(suffix ${configuration}-${instruction-set-architecture})
+  
+  message(STATUS "suffix := ${suffix}")
 
   set(${target}-SOURCE_DIR "${CMAKE_CURRENT_BINARY_DIR}/${target}/src")
   set(${target}-BUILD_DIR "${CMAKE_CURRENT_BINARY_DIR}/${target}/bld")
@@ -31,13 +41,13 @@ macro(DoBeginPackage target)
   set(${target}-PACKAGE_LIBRARIES_DIR ${${target}-PACKAGE_DIR}/${configuration}/lib)
 
   #  Custom target for creating the directories.
-  add_custom_target(${target}-CREATE-DIRECTORIES DEPENDS ${${target}-PACKAGE_DIR}/.create-directories-stamp-${configuration})
+  add_custom_target(${target}-CREATE-DIRECTORIES DEPENDS ${${target}-PACKAGE_DIR}/.create-directories-stamp-${suffix})
 
   # Custom target for creating the library files.
-  add_custom_target(${target}-CREATE-LIBRARIES DEPENDS ${${target}-PACKAGE_DIR}/.create-libraries-stamp-${configuration})
+  add_custom_target(${target}-CREATE-LIBRARIES DEPENDS ${${target}-PACKAGE_DIR}/.create-libraries-stamp-${suffix})
 
   # Custom target for creating the include files.
-  add_custom_target(${target}-CREATE-INCLUDES DEPENDS ${${target}-PACKAGE_DIR}/.create-directories-stamp-${configuration} ${${target}-PACKAGE_DIR}/.create-includes-stamp-${configuration})
+  add_custom_target(${target}-CREATE-INCLUDES DEPENDS ${${target}-PACKAGE_DIR}/.create-directories-stamp-${suffix} ${${target}-PACKAGE_DIR}/.create-includes-stamp-${suffix})
 
 endmacro()
 
@@ -47,13 +57,13 @@ macro(DoEndPackage target)
   add_custom_target(${target}-package ALL DEPENDS ${target}-CREATE-LIBRARIES ${target}-CREATE-INCLUDES)
 
   # zip archive creation
-  add_custom_command(OUTPUT ${${target}-PACKAGE_DIR}/.create-zip-archive-stamp-${configuration}
+  add_custom_command(OUTPUT ${${target}-PACKAGE_DIR}/.create-zip-archive-stamp-${suffix}
                      DEPENDS ${target}-CREATE-LIBRARIES ${target}-CREATE-INCLUDES
-                     WORKING_DIRECTORY "${${target}-PACKAGE_DIR}"
-                     COMMAND ${CMAKE_COMMAND} -E tar cf "${${target}-PACKAGE_DIR}/${target}-${configuration}.zip" --format=zip "${${target}-PACKAGE_DIR}/${configuration}"
-                     COMMAND ${CMAKE_COMMAND} -E touch ${${target}-PACKAGE_DIR}/.create-zip-archive-stamp-${configuration})
+                     WORKING_DIRECTORY "${${target}-PACKAGE_DIR}/${configuration}"
+                     COMMAND ${CMAKE_COMMAND} -E tar cf "${${target}-PACKAGE_DIR}/${target}-${suffix}.zip" --format=zip .
+                     COMMAND ${CMAKE_COMMAND} -E touch ${${target}-PACKAGE_DIR}/.create-zip-archive-stamp-${suffix})
 
   # "*-CREATE-ZIP-ARCHIVE" project.
-  add_custom_target(${target}-CREATE-ZIP-ARCHIVE DEPENDS ${${target}-PACKAGE_DIR}/.create-zip-archive-stamp-${configuration})
+  add_custom_target(${target}-CREATE-ZIP-ARCHIVE ALL DEPENDS ${${target}-PACKAGE_DIR}/.create-zip-archive-stamp-${suffix})
 
 endmacro()

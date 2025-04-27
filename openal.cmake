@@ -40,16 +40,16 @@ ExternalProject_Add(${target}-external
                     TEST_COMMAND "")
 
 # We use the "touch" method to avoid issues with file modification timestamps causing an MSB8065 warning.
-add_custom_command(OUTPUT ${${target}-PACKAGE_DIR}/.create-directories-stamp-${configuration}
+add_custom_command(OUTPUT ${${target}-PACKAGE_DIR}/.create-directories-stamp-${suffix}
                    DEPENDS ${target}-external
                    COMMAND ${CMAKE_COMMAND} -E make_directory ${${target}-PACKAGE_INCLUDES_DIR} ${${target}-PACKAGE_LIBRARIES_DIR}
-                   COMMAND ${CMAKE_COMMAND} -E touch ${${target}-PACKAGE_DIR}/.create-directories-stamp-${configuration})
+                   COMMAND ${CMAKE_COMMAND} -E touch ${${target}-PACKAGE_DIR}/.create-directories-stamp-${suffix})
 
-add_custom_command(OUTPUT ${${target}-PACKAGE_DIR}/.create-libraries-stamp-${configuration}
+add_custom_command(OUTPUT ${${target}-PACKAGE_DIR}/.create-libraries-stamp-${suffix}
                    DEPENDS ${target}-CREATE-DIRECTORIES ${target}-external
                    COMMAND ${CMAKE_COMMAND} -E copy ${${target}-BUILD_DIR}/${configuration}/$<IF:$<CONFIG:Debug>,OpenAL32.lib,OpenAL32.lib>
                                                     ${${target}-PACKAGE_LIBRARIES_DIR}/OpenAL32.lib
-                   COMMAND ${CMAKE_COMMAND} -E touch ${${target}-PACKAGE_DIR}/.create-libraries-stamp-${configuration})
+                   COMMAND ${CMAKE_COMMAND} -E touch ${${target}-PACKAGE_DIR}/.create-libraries-stamp-${suffix})
 
 # We have the list of files to copy.
 set(NAMES "")
