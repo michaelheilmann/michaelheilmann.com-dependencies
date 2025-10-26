@@ -89,7 +89,7 @@ deploy:
     description: 'michaelheilmann.com dependencies v$(APPVEYOR_BUILD_VERSION)'
     provider: GitHub
     auth_token:
-        secure: iTg7jon0UCvoGT5y2flVxKbuZIM0cCf+3cKmhb811umlbh9zHOtvJQjEqDU53XDT8/SE5zreMGYwnShZDpovMZRmpiuTdlQD9Y0hjKw1a+QBZguyWOpmttY9hv8E5FFq # encrypted token from GitHub
+        secure: iTg7jon0UCvoGT5y2flVxLlhZs9xza3tjBl3BDcyfaWZgDwqi4eKcdLDKpBlHGmSxFa29t6QJg42AHtX9RO/x39VKrZgT7pbkqndNJZb8tEd2ib+fmEN9OAPiD8GV1d1 # encrypted token from GitHub
         artifact: >
             my-opengl\my-opengl-$(SUFFIX).zip,
             my-openal\my-openal-$(SUFFIX).zip,
