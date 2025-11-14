@@ -89,7 +89,7 @@ deploy:
     description: 'michaelheilmann.com dependencies v$(APPVEYOR_BUILD_VERSION)'
     provider: GitHub
     auth_token:
-        secure: iTg7jon0UCvoGT5y2flVxLlhZs9xza3tjBl3BDcyfaWZgDwqi4eKcdLDKpBlHGmSxFa29t6QJg42AHtX9RO/x39VKrZgT7pbkqndNJZb8tEd2ib+fmEN9OAPiD8GV1d1 # encrypted token from GitHub
+        secure: iTg7jon0UCvoGT5y2flVxMkwIjqK45TQdgX+6FFUZew/loUpeRw8MR5RhgoRT2u30KSSpbUYJjdzUgdIhrfIbzusBU+WHBlRNWwBzqOkv/3VkTYivj/xfctXZ7xtBxW3 # encrypted token from GitHub
         artifact: >
             my-freetype\my-libflac-$(SUFFIX).zip,
             my-freetype\my-ogg-$(SUFFIX).zip,

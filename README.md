@@ -26,7 +26,7 @@ To generate the build files for the target architecture x86, change the command 
 To generate the build files for the target architecture x64, change the command to `cmake -A x64 <source directory>`.
 
 ### Building additional tools under Windows
-This section contains manuals how to build libraries which are not fully integrated into the dependencies.
+This section contains manuals how to build libraries which are not integrated into the dependencies build.
 The manuals explain how to build them manually.
 
 #### libopenssl
@@ -54,4 +54,3 @@ nmake install_sw
 
 ### Build status
 - Windows Main [![Build status](https://ci.appveyor.com/api/projects/status/ap4tbo0e8554fdk4/branch/main?svg=true)](https://ci.appveyor.com/project/michaelheilmann-com/michaelheilmann-com-dependencies)
-- Windows Develop [![Build status](https://ci.appveyor.com/api/projects/status/ap4tbo0e8554fdk4/branch/develop?svg=true)](https://ci.appveyor.com/project/michaelheilmann-com/michaelheilmann-com-dependencies)
