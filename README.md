@@ -25,6 +25,33 @@ Remarks: This will build the target architecture that is the default of your mac
 To generate the build files for the target architecture x86, change the command to `cmake -A Win32 <source directory>`.
 To generate the build files for the target architecture x64, change the command to `cmake -A x64 <source directory>`.
 
+### Building additional tools under Windows
+This section contains manuals how to build libraries which are not fully integrated into the dependencies.
+The manuals explain how to build them manually.
+
+#### libopenssl
+- Install [Strawberry Perl](https://strawberryperl.com)
+- Install [Netwide Assembler](https://www.nasm.us). Do *not* use the portable versions.
+- Ensure "Desktop Development With C++ Workload" is installed (for vcvarsall.bat).
+- Download libopenssl-3.5.4 and unpack to directory C:\build\libopenssl-3.5.4.
+- Open the `Developer Command Prompt` and enter
+
+```
+nmake clean
+"C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Auxiliary\Build\vcvarsall.bat" amd64
+perl Configure VC-WIN64A --prefix=C:\Users\Anwender\Downloads\build\x64 --openssldir=C:\Users\Anwender\Downloads\openssl-master
+nmake
+nmake install_sw
+```
+
+```
+nmake clean
+"C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Auxiliary\Build\vcvarsall.bat" amd64_x86
+perl Configure VC-WIN32 --prefix=C:\Users\Anwender\Downloads\build\x86 --openssldir=C:\Users\Anwender\Downloads\openssl-master
+nmake
+nmake install_sw
+```
+
 ### Build status
 - Windows Main [![Build status](https://ci.appveyor.com/api/projects/status/ap4tbo0e8554fdk4/branch/main?svg=true)](https://ci.appveyor.com/project/michaelheilmann-com/michaelheilmann-com-dependencies)
 - Windows Develop [![Build status](https://ci.appveyor.com/api/projects/status/ap4tbo0e8554fdk4/branch/develop?svg=true)](https://ci.appveyor.com/project/michaelheilmann-com/michaelheilmann-com-dependencies)
