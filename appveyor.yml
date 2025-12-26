@@ -5,9 +5,9 @@ clone_depth: 1
 image: Visual Studio 2022
 
 # Build on pushes to all branches.
-#branches:
-#  only:
-#    - main
+branches:
+  only:
+    - main
 #    - develop
 
 # Do not build on tag pushes.
@@ -19,11 +19,11 @@ platform:
     - Win32
 
 # Build configurations.
-configuration:
-    - Release
-    - Debug
-    - MinSizeRel
-    - RelWithDebInfo
+#configuration:
+#    - Release
+#    - Debug
+#    - MinSizeRel
+#    - RelWithDebInfo
 
 install:
     # Download and install CMake.
@@ -44,26 +44,15 @@ before_build:
         } else {
           throw "unsupported platform ${env:PLATFORM}";
         }
-        ${env:SUFFIX}="$(${env:CONFIGURATION}.ToLower())-${env:SUFFIX}"
+        ${env:SUFFIX}="${env:SUFFIX}";
         Write-Host "Suffix: ${env:SUFFIX}";
-    - ps: |
-        # The name of the CMake generator, for example "Visual Studio 17 2022".
-        ${env:CMAKE_GENERATOR_NAME}="Visual Studio 17 2022"
-        # The name of the release, for example "michaelheilmann.com-${env:APPVEYOR_REPO_BRANCH}-10.1.9".
-        ${env:RELEASE_NAME}="michaelheilmann.com-dependencies-v$(${env:APPVEYOR_BUILD_VERSION}.ToLower())"
-        Write-Host "Release Name: ${env:RELEASE_NAME}"
-        Write-Host "AppVeyor Platform: ${env:PLATFORM}"
-        Write-Host "AppVeyor Configuration: ${env:CONFIGURATION}"
-        Write-Host "AppVeyor Build Folder: ${env:APPVEYOR_BUILD_FOLDER}"
-        Write-Host "CMake Generator: ${env:CMAKE_GENERATOR_NAME}"
-    - ps: |
-        Write-Host "CMake Generator: ${env:CMAKE_GENERATOR_NAME}"
-        Write-Host "CMake Architecture: ${env:CMAKE_ARCHITECTURE_NAME}"
-        cmake -G ${env:CMAKE_GENERATOR_NAME} -A ${env:PLATFORM} CMakeLists.txt
+        ${env:PREFIX}="${env:Temp}";
 
-build:
-    parallel: true # enable MSBuild parallel builds
-    project: Arcadia-Dependencies.sln # path to Visual Studio solution or project
+build_script:
+    - ps: Write-Host "build started"
+    - ps: ./build.ps1 -TargetArchitecture ${env:SUFFIX}
+    - ps: Compress-Archive -Path ./.dependencies/* -DestinationPath ${env:APPVEYOR_BUILD_FOLDER}/dependencies-${env:SUFFIX}.zip
+    - ps: Write-Host "build finished"
 
 after_build:
 
@@ -72,16 +61,8 @@ matrix:
     fast_finish: true
 
 artifacts:
-    - path: my-opengl\pkg\my-opengl-$(SUFFIX).zip
-      name: my-opengl\my-opengl-$(SUFFIX).zip
-    - path: my-openal\pkg\my-openal-$(SUFFIX).zip
-      name: my-openal\my-openal-$(SUFFIX).zip
-    - path: my-freetype\pkg\my-freetype-$(SUFFIX).zip
-      name: my-freetype\my-freetype-$(SUFFIX).zip
-    - path: my-libpng\pkg\my-libpng-$(SUFFIX).zip
-      name: my-libpng\my-libpng-$(SUFFIX).zip
-    - path: my-zlib\pkg\my-zlib-$(SUFFIX).zip
-      name: my-zlib\my-zlib-$(SUFFIX).zip
+    - path: dependencies-$(SUFFIX).zip
+      name: arcadia-dependencies-$(SUFFIX)
 
 deploy:
     release: michaelheilmann.com-dependencies-v$(APPVEYOR_BUILD_VERSION)
@@ -89,15 +70,8 @@ deploy:
     description: 'michaelheilmann.com dependencies v$(APPVEYOR_BUILD_VERSION)'
     provider: GitHub
     auth_token:
-        secure: iTg7jon0UCvoGT5y2flVxMkwIjqK45TQdgX+6FFUZew/loUpeRw8MR5RhgoRT2u30KSSpbUYJjdzUgdIhrfIbzusBU+WHBlRNWwBzqOkv/3VkTYivj/xfctXZ7xtBxW3 # encrypted token from GitHub
-        artifact: >
-            my-freetype\my-libflac-$(SUFFIX).zip,
-            my-freetype\my-ogg-$(SUFFIX).zip,
-            my-opengl\my-opengl-$(SUFFIX).zip,
-            my-openal\my-openal-$(SUFFIX).zip,
-            my-freetype\my-freetype-$(SUFFIX).zip,
-            my-libpng\my-libpng-$(SUFFIX).zip,
-            my-zlib\pkg\my-zlib-$(SUFFIX).zip
+        secure: iTg7jon0UCvoGT5y2flVxNA9E1PUZel7gE6Bh3jx6lE/FxU5LUKh+KCKD9tPoUoqhiyzM+BuJHvf7QqP8Os5LayR3FkXEdINXJuEkH6jz/IHHhojo4pEAo3wWikarFOS # encrypted token from GitHub
+        artifact: arcadia-dependencies-$(SUFFIX) # name (not path) of the artifact
     draft: true
     prerelease: false
     force_update: true
