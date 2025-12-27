@@ -70,7 +70,7 @@ deploy:
     description: 'michaelheilmann.com dependencies v$(APPVEYOR_BUILD_VERSION)'
     provider: GitHub
     auth_token:
-        secure: iTg7jon0UCvoGT5y2flVxNA9E1PUZel7gE6Bh3jx6lE/FxU5LUKh+KCKD9tPoUoqhiyzM+BuJHvf7QqP8Os5LayR3FkXEdINXJuEkH6jz/IHHhojo4pEAo3wWikarFOS # encrypted token from GitHub
+        secure: iTg7jon0UCvoGT5y2flVxA/51k5KiTsGKLDKNVffTHH+hpzToAuhoN10dFFE4aecyJSgaDkL+DZLG8w17ovMdBO0wM0r90DisUq95xxpw/C9vkn2s3tXBH890DsNrkk6 # encrypted token from GitHub
         artifact: arcadia-dependencies-$(SUFFIX) # name (not path) of the artifact
     draft: true
     prerelease: false
